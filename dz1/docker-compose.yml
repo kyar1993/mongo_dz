@@ -1,0 +1,25 @@
+services:
+  mongodb:
+    build: .
+    container_name: mongo-ssh
+    restart: unless-stopped
+    ports:
+      - "27017:27017"  # порт mongo
+      - "2222:22"      # ssh порт
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: mongo123
+    volumes:
+      - mongo_data:/data/db
+      - ./scripts:/scripts  # будущие скрипты
+      - ./ssh-keys:/root/.ssh:ro  # ключи
+      - ./ssh-keys:/home/mongoadmin/.ssh:ro
+    networks:
+      - mongo-net
+
+networks:
+  mongo-net:
+    driver: bridge
+
+volumes:
+  mongo_data:

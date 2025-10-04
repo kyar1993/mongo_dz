@@ -1,0 +1,37 @@
+app_name := "mongodb"
+
+# Print recipes list
+help:
+    @just -l
+
+ssh-keygen:
+    @echo "Generating SSH keys..."
+    mkdir -p ssh-keys
+    ssh-keygen -t rsa -f ssh-keys/mongo_key -N ""
+    cp ssh-keys/mongo_key.pub ssh-keys/authorized_keys
+    chmod 700 ssh-keys
+    chmod 600 ssh-keys/*
+
+# Remove old host key
+clean-ssh:
+    @echo "Cleaning old SSH host keys..."
+    -ssh-keygen -f ~/.ssh/known_hosts -R '[localhost]:2222' 2>/dev/null
+
+# Start cluster with build
+cluster-up-build: ssh-keygen clean-ssh
+    @echo 'Starting local cluster...'
+    docker compose up -d --build
+
+# Start cluster
+cluster-up: ssh-keygen
+    @echo 'Starting local cluster...'
+    docker compose up -d
+
+# Stop cluster
+cluster-down:
+    @echo 'Stopping cluster...'
+    docker compose down
+
+# SSH connection
+cluster-ssh:s
+    ssh -i ssh-keys/mongo_key -p 2222 mongoadmin@localhost
