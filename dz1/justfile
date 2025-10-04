@@ -33,5 +33,5 @@ cluster-down:
     docker compose down
 
 # SSH connection
-cluster-ssh:s
+cluster-ssh:
     ssh -i ssh-keys/mongo_key -p 2222 mongoadmin@localhost
